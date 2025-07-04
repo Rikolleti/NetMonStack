@@ -73,10 +73,10 @@
 
 netmonstack/
 ├── packer/
+│   ├── variables.pkrvars.hcl
 │   ├── ubuntu-zabbix.pkr.hcl
 │   └── scripts/
 │       ├── install.sh
-│       └── user\_setup.sh
 ├── terraform/
 │   └── main.tf
 ├── docker/
@@ -126,9 +126,9 @@ netmonstack/
 
 ### 🔧 Packer
 
-- [ ] Создать `ubuntu-zabbix.pkr.hcl`
-- [ ] Написать `install.sh` (Docker, Ansible, cron)
-- [ ] Собрать образ и протестировать
+- [✅] Создать `ubuntu-zabbix.pkr.hcl`
+- [✅] Написать `install.sh` (Docker, Ansible, cron)
+- [✅] Собрать образ и протестировать
 
 ### ☁️ Terraform
 
