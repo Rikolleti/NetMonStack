@@ -1,1 +1,8 @@
 /packer/variables.pkrvars.hcl
+.env
+# Grafana
+grafana/lib/
+grafana/logs/
+grafana/grafana.db
+grafana/plugins/
+grafana/__pycache__/
