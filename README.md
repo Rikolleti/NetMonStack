@@ -183,6 +183,7 @@ git clone https://github.com/yourname/netmonstack.git
 cd netmonstack
 
 # 2. Собери образ
+cp docker/.env.example docker/.env
 cd packer && packer build ubuntu-zabbix.pkr.hcl
 
 # 3. Разверни инфраструктуру
