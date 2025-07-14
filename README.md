@@ -94,7 +94,6 @@ netmonstack/
 │   ├── alertscripts/         # Скрипты для уведомлений (Telegram и пр.)
 │   ├── export/               # Экспорт шаблонов
 │   ├── externalscripts/      # Скрипты внешнего мониторинга
-│   ├── modules/              # Zabbix модули
 │   └── snmptraps/            # Файлы с SNMP ловушками
 |   ── snmp_templates/           # Шаблоны мониторинга по SNMP
 ├── backups/

@@ -32,6 +32,14 @@ services:
     restart: always
     ports:
       - "10051:10051"
+    volumes:
+      # Основной volume для всех данных Zabbix
+      - zabbix_data:/var/lib/zabbix
+      # Ниже — опционально: подключаются папки, если хочешь видеть/редактировать их снаружи
+      - ./zabbix/server/externalscripts:/usr/lib/zabbix/externalscripts   # Добавляет скрипты
+      - ./zabbix/server/alertscripts:/usr/lib/zabbix/alertscripts         # Настраивает оповещения в Telegram/Slack
+      - ./zabbix/server/snmptraps:/var/lib/zabbix/snmptraps               # SNMP trap'ы
+      - ./zabbix/server/export:/var/lib/zabbix/export                     # Экспортирует шаблоны
     environment:
       - DB_SERVER_HOST=db
       - POSTGRES_USER=${POST_USER}
@@ -59,3 +67,4 @@ services:
 
 volumes:
   pg_data:
+  zabbix_data:
