@@ -89,8 +89,14 @@ netmonstack/
 │   └── group\_vars/
 ├── grafana/
 │   └── provisioning/
-├── zabbix/
-│   └── snmp\_templates/
+|──zabbix/
+|   ── server/
+│   ├── alertscripts/         # Скрипты для уведомлений (Telegram и пр.)
+│   ├── export/               # Экспорт шаблонов
+│   ├── externalscripts/      # Скрипты внешнего мониторинга
+│   ├── modules/              # Zabbix модули
+│   └── snmptraps/            # Файлы с SNMP ловушками
+|   ── snmp_templates/           # Шаблоны мониторинга по SNMP
 ├── backups/
 ├── .github/
 │   └── workflows/deploy.yml
