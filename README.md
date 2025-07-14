@@ -137,7 +137,7 @@ netmonstack/
 
 - [✅] `docker-compose.yml` с Zabbix, Grafana, PostgreSQL
 - [✅] Создать `.env.example` файл
-- [ ] Протестировать stack, настроить volume'ы
+- [✅] Протестировать stack, настроить volume'ы
 
 ### ⚙️ Ansible
 
