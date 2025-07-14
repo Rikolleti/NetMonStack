@@ -2,7 +2,7 @@
 # 🚀 NetMonStack
 
 **NetMonStack** — это production-like система мониторинга сетевых устройств с автоматическим сбором метрик, визуализацией, алертами, резервным копированием конфигураций, деплоем через CI/CD и созданием образов через Packer.  
-Проект построен на стеке **Zabbix + Grafana + Alertmanager + Ansible + Terraform + Packer + Docker Compose** и демонстрирует полный DevOps-цикл.
+Проект построен на стеке **Zabbix + Grafana + Ansible + Terraform + Packer + Docker Compose** и демонстрирует полный DevOps-цикл.
 
 ---
 
@@ -43,7 +43,7 @@
             │
             ▼
     ┌────────────────────┐
-    │ Grafana + Alerting │ ←── Визуализация и алерты
+    │ Grafana + Zabbix │ | <── Визуализация и алерты
     └────────────────────┘
 
 
@@ -58,9 +58,8 @@
 | **Packer**         | Создание образа Ubuntu с Docker, Ansible, cron   |
 | **Terraform**      | Развёртывание облачной ВМ на основе образа       |
 | **Docker Compose** | Запуск мониторингового стека внутри ВМ           |
-| **Zabbix**         | Сбор метрик, шаблоны, триггеры                   |
+| **Zabbix**         | Сбор метрик, шаблоны, триггеры, алерты           |
 | **Grafana**        | Визуализация (через Zabbix Data Source)          |
-| **Alertmanager**   | Отправка уведомлений (Telegram, Email)           |
 | **Ansible**        | Импорт шаблонов, добавление хостов, бэкапы       |
 | **GitHub Actions** | CI/CD: автоматическая сборка и деплой            |
 | **cron**           | Ежедневный запуск бэкапов конфигураций           |
@@ -90,8 +89,6 @@ netmonstack/
 │   └── group\_vars/
 ├── grafana/
 │   └── provisioning/
-├── alertmanager/
-│   └── config.yml
 ├── zabbix/
 │   └── snmp\_templates/
 ├── backups/
@@ -107,8 +104,8 @@ netmonstack/
 ## 📈 Возможности
 
 - 🔍 Мониторинг устройств (SNMP, Zabbix Agent, ICMP)
-- 📊 Визуализация в Grafana (дэшборды, алерты)
-- 📩 Уведомления при сбоях (Telegram, Email)
+- 📊 Визуализация в Grafana (дэшборды, алерты через триггеры Zabbix)
+- 📩 Уведомления при сбоях (Telegram, Email через Zabbix Media Types)
 - ⚙️ Автоматическая загрузка шаблонов Zabbix
 - 🧩 Массовое добавление устройств через Ansible
 - 🗄 Резервное копирование конфигов по cron
@@ -139,7 +136,6 @@ netmonstack/
 ### 🐳 Мониторинг + Docker
 
 - [✅] `docker-compose.yml` с Zabbix, Grafana, PostgreSQL
-- [ ] Добавить Alertmanager
 - [✅] Создать `.env.example` файл
 - [ ] Протестировать stack, настроить volume'ы
 
@@ -155,11 +151,11 @@ netmonstack/
 - [ ] Настроить `cron` для ежедневных бэкапов
 - [ ] Проверить, что файлы появляются в `backups/`
 
-### 📊 Grafana + Alertmanager
+### 📊 Grafana + Zabbix
 
 - [ ] Provisioning dashboards
-- [ ] Настроить Alertmanager webhook
-- [ ] Подключить Telegram / Email
+- [ ] Настроить Zabbix Data Source
+- [ ] Настроить уведомления из Zabbix (Telegram, Email)
 
 ### 🚀 CI/CD (GitHub Actions)
 
