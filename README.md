@@ -185,7 +185,7 @@ cd netmonstack
 
 # 2. Собери образ
 cp docker/.env.example docker/.env
-cd packer && packer build ubuntu-zabbix.pkr.hcl
+cd packer && packer build -var-file=variables.pkrvars.hcl ubuntu-zabbix.pkr.hcl
 
 # 3. Разверни инфраструктуру
 cd terraform && terraform apply
