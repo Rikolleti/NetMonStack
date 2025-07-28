@@ -77,7 +77,11 @@ netmonstack/
 │   └── scripts/
 │       ├── install.sh
 ├── terraform/
-│   └── main.tf
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── terraform.tfvars
+│   ├── outputs.tf
+│   └── providers.tf
 ├── docker/
 │   └── docker-compose.yml
 │   └── .env
@@ -135,8 +139,8 @@ netmonstack/
 
 ### ☁️ Terraform
 
-- [ ] Написать `main.tf` с развёртыванием на основе образа
-- [ ] Открыть порты, настроить SSH-доступ
+- [✅] Написать `main.tf` с развёртыванием на основе образа
+- [✅] Открыть порты, настроить SSH-доступ
 
 ### 🐳 Мониторинг + Docker
 
@@ -188,7 +192,9 @@ cp docker/.env.example docker/.env
 cd packer && packer build -var-file=variables.pkrvars.hcl ubuntu-zabbix.pkr.hcl
 
 # 3. Разверни инфраструктуру
-cd terraform && terraform apply
+cd ../terraform
+terraform init
+terraform apply
 
 # 4. Подключись к ВМ и запусти стек мониторинга
 ssh user@VM_IP
