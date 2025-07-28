@@ -6,3 +6,10 @@ grafana/logs/
 grafana/grafana.db
 grafana/plugins/
 grafana/__pycache__/
+
+#Terraform
+.authorized_key.json
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/personal.auto.tfvars

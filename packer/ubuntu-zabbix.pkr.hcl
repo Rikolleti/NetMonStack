@@ -19,6 +19,7 @@ source "yandex" "ubuntu-22_04" {
   disk_type           = "network-hdd"
   image_description   = "my custom ubuntu for netmonstack"
   image_name          = "ubuntu-2204-lts-oslogin-v20250519"
+  image_family        = "netmonstack-base"
   source_image_family = "ubuntu-2204-lts-oslogin"
   ssh_username        = "ubuntu"
   use_ipv4_nat        = true
