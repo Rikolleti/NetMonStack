@@ -13,3 +13,6 @@ terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/*.tfvars
 terraform/personal.auto.tfvars
+
+#Ansible
+ansible/collections/
