@@ -16,3 +16,5 @@ terraform/personal.auto.tfvars
 
 #Ansible
 ansible/collections/
+.ansible/
+collections/
