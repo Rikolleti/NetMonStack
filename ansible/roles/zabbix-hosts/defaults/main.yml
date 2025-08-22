@@ -1,0 +1,4 @@
+---
+# defaults file for zabbix-hosts
+hosts_csv: "{{ playbook_dir }}/../inventory/prod/hosts.csv"
+zbx_hosts_csv: "{{ hosts_csv }}"

@@ -1,0 +1,27 @@
+# Общие переменные для всех
+backup_dir: "{{ playbook_dir }}/../backups/{{ inventory_hostname }}/{{ backup_date }}"
+hosts_csv: "{{ playbook_dir }}/../inventory/prod/hosts.csv"
+
+zbx_snmp_community: "public"  # ок, это общее
+
+# Карты команд / отключение пейджера / расширения файлов
+show_command_map:
+  ios: "show running-config"
+  eltex: "show running-config"
+  huawei: "display current-configuration"
+  mikrotik: "/export"
+
+pager_disable_map:
+  ios: "terminal length 0"
+  huawei: "screen-length 0 temporary"
+  eltex: "terminal pager 0"
+
+file_ext_map:
+  ios: "cfg"
+  huawei: "cfg"
+  mikrotik: "rsc"
+  eltex: "cfg"
+
+# Метки времени/даты — формируются на контроллере
+backup_date: "{{ lookup('pipe','date +%F') }}"
+backup_ts: "{{ lookup('pipe','date -u +%Y%m%dT%H%M%SZ') }}"

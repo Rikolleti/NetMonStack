@@ -1,0 +1,28 @@
+---
+- name: Import Zabbix templates via role
+  hosts: zabbix_api
+  gather_facts: false
+
+  pre_tasks:
+    - name: Show resolved httpapi settings
+      debug:
+        msg:
+          host: "{{ ansible_host | default(inventory_hostname) }}"
+          use_ssl: "{{ ansible_httpapi_use_ssl | default(false) }}"
+          port: "{{ ansible_httpapi_port | default('N/A') }}"
+          path: "{{ ansible_httpapi_path | default('N/A') }}"
+
+    - name: Reset connection so new httpapi vars apply
+      meta: reset_connection
+
+    # Быстрая проверка API через connection plugin
+    - name: Probe Zabbix API via plugin
+      community.zabbix.zabbix_api_info:
+      register: zbx_info
+
+    - name: Print Zabbix API version
+      debug:
+        var: zbx_info.apiinfo.version
+
+  roles:
+    - role: zabbix-templates

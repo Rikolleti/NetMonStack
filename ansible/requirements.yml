@@ -1,0 +1,8 @@
+---
+collections:
+  - name: community.zabbix
+  - name: community.general
+  - name: ansible.utils
+  - name: ansible.netcommon
+  - name: cisco.ios
+  - name: community.routeros

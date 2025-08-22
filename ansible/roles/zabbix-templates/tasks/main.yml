@@ -1,0 +1,61 @@
+---
+# 0) Надёжно вычисляем путь к шаблонам, даже если templates_dir не задан
+#    Основа: role_path → ../../templates/zabbix (от каталога роли до корня ansible)
+- name: Compute templates_dir fallback
+  ansible.builtin.set_fact:
+    _fallback_templates_dir: "{{ (role_path | dirname | dirname) ~ '/templates/zabbix' }}"
+  run_once: true
+
+- name: Ensure templates_dir and patterns are defined
+  ansible.builtin.set_fact:
+    templates_dir: "{{ templates_dir | default(_fallback_templates_dir) }}"
+    templates_patterns: "{{ templates_patterns | default(['*.xml','*.yaml','*.yml','*.json']) }}"
+  run_once: true
+
+- name: Debug resolved templates_dir (one-time)
+  ansible.builtin.debug:
+    msg:
+      templates_dir: "{{ templates_dir }}"
+      patterns: "{{ templates_patterns }}"
+  run_once: true
+
+# 1) Находим все шаблоны локально (repo), а не на хосте API
+- name: Find templates (*.{xml,yaml,json})
+  ansible.builtin.find:
+    paths: "{{ templates_dir }}"
+    patterns: "{{ templates_patterns }}"
+    file_type: file
+  register: templates
+  delegate_to: localhost
+  run_once: true
+
+- name: Fail if no templates found
+  ansible.builtin.assert:
+    that:
+      - templates.files | length > 0
+    fail_msg: "No templates found in {{ templates_dir }} (patterns: {{ templates_patterns }})"
+  run_once: true
+
+# 2) Импорт XML
+- name: Import XML templates
+  community.zabbix.zabbix_configuration:
+    content_xml: "{{ lookup('file', item.path) }}"
+    rules: "{{ zbx_import_rules }}"
+  loop: "{{ templates.files | selectattr('path','search','\\.xml$') | list }}"
+  when: templates.files | selectattr('path','search','\\.xml$') | list | length > 0
+
+# 3) Импорт YAML
+- name: Import YAML templates
+  community.zabbix.zabbix_configuration:
+    content_yaml: "{{ lookup('file', item.path) }}"
+    rules: "{{ zbx_import_rules }}"
+  loop: "{{ templates.files | selectattr('path','search','\\.ya?ml$') | list }}"
+  when: templates.files | selectattr('path','search','\\.ya?ml$') | list | length > 0
+
+# 4) Импорт JSON
+- name: Import JSON templates
+  community.zabbix.zabbix_configuration:
+    content_json: "{{ lookup('file', item.path) }}"
+    rules: "{{ zbx_import_rules }}"
+  loop: "{{ templates.files | selectattr('path','search','\\.json$') | list }}"
+  when: templates.files | selectattr('path','search','\\.json$') | list | length > 0

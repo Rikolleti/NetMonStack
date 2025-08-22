@@ -1,0 +1,38 @@
+---
+# Zabbix
+zbx_url: "http://127.0.0.1:8081"
+zbx_user: "Admin"
+zbx_password: "zabbix"
+zbx_validate_certs: false
+ansible_zabbix_url_path: ""
+
+# Подключение к Zabbix API (HTTPAPI драйвер)
+ansible_connection: httpapi
+ansible_network_os: community.zabbix.zabbix
+ansible_httpapi_use_ssl: false           # true, если у тебя https
+ansible_httpapi_port: 8081               # твой порт UI
+ansible_httpapi_validate_certs: false
+ansible_httpapi_cookies_enabled: true
+ansible_zabbix_url_path: ""
+ansible_user: "{{ zbx_user }}"
+ansible_httpapi_pass: "{{ zbx_password }}"
+
+# Где лежат шаблоны в репозитории
+templates_dir: "{{ (ansible_playbook_dir | realpath) }}/../templates/zabbix"
+templates_patterns:
+  - "*.xml"
+  - "*.yaml"
+  - "*.yml"
+  - "*.json"
+
+# Правила импорта Zabbix (бережно обновляем существующее)
+zbx_import_rules:
+  templates:          { createMissing: true, updateExisting: true }
+  templateLinkage:    { createMissing: true, deleteMissing: false }
+  items:              { createMissing: true, updateExisting: true, deleteMissing: true }
+  discoveryRules:     { createMissing: true, updateExisting: true, deleteMissing: true }
+  triggers:           { createMissing: true, updateExisting: true, deleteMissing: true }
+  graphs:             { createMissing: true, updateExisting: true, deleteMissing: true }
+  valueMaps:          { createMissing: true, updateExisting: true }
+  templateDashboards: { createMissing: true, updateExisting: true, deleteMissing: true }
+  httptests:          { createMissing: true, updateExisting: true, deleteMissing: true }

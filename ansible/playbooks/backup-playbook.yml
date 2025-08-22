@@ -1,0 +1,6 @@
+---
+- name: Backup network device configs
+  hosts: all
+  gather_facts: false
+  roles:
+    - net-backup

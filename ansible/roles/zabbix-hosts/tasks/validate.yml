@@ -1,0 +1,35 @@
+---
+- name: Read CSV
+  community.general.read_csv:
+    path: "{{ hosts_csv }}"
+  register: csv_raw
+
+- name: Normalize rows -> devices
+  set_fact:
+    devices: "{{ csv_raw.list | default([]) }}"
+
+- name: Filter out empty rows (safety)
+  set_fact:
+    devices: >-
+      {{ devices
+         | selectattr('keys', 'defined')
+         | list }}
+
+# Без ansible.utils: проверим обязательные поля regex'ом и толерантно к именам колонок
+- name: Ensure required fields present
+  vars:
+    _name: >-
+      {{ item.name | default(item.host_name) | default(item.hostname) | default('') }}
+    _ip: >-
+      {{ item.ip | default(item.ip_address) | default(item.address) | default('') }}
+    _ipv4_regex: '^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$'
+  assert:
+    that:
+      - _name | length > 0
+      - _ip is match(_ipv4_regex)
+    fail_msg: >-
+      Bad row: need name/host_name/hostname and IPv4 ip/ip_address/address.
+      Row={{ item | to_nice_json }}
+  loop: "{{ devices }}"
+  loop_control:
+    label: "{{ _name }} ({{ _ip }})"

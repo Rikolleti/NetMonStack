@@ -1,0 +1,125 @@
+---
+
+- name: Read CSV
+  community.general.read_csv:
+    path: "{{ hosts_csv }}"
+  register: csv_raw
+
+- name: Normalize rows -> devices
+  set_fact:
+    devices: "{{ csv_raw.list | default([]) }}"
+
+- name: Filter out empty rows (safety)
+  set_fact:
+    devices: >-
+      {{ devices
+         | selectattr('keys', 'defined')
+         | list }}
+
+- name: Ensure required fields present
+  vars:
+    _name: >-
+      {{ item.name | default(item.host_name) | default(item.hostname) | default('') }}
+    _ip: >-
+      {{ item.ip | default(item.ip_address) | default(item.address) | default('') }}
+    _ipv4_regex: '^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$'
+  assert:
+    that:
+      - _name | length > 0
+      - _ip is match(_ipv4_regex)
+    fail_msg: >-
+      Bad row: need name/host_name/hostname and IPv4 ip/ip_address/address.
+      Row={{ item | to_nice_json }}
+  loop: "{{ devices }}"
+  loop_control:
+    label: "{{ _name }} ({{ _ip }})"
+
+- name: Check Zabbix API is reachable
+  uri:
+    url: "{{ zbx_url | regex_replace('/$', '') }}/api_jsonrpc.php"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "apiinfo.version"
+      params: {}
+      id: 1
+    status_code: 200
+    return_content: true
+    validate_certs: "{{ zbx_validate_certs | default(false) }}"
+  register: zbx_api_ping
+
+- name: Show Zabbix API version
+  debug:
+    var: zbx_api_ping.json
+
+- name: Collect unique host groups from CSV
+  set_fact:
+    _all_groups: >-
+      {{ devices
+         | map(attribute='groups')
+         | map('default','')
+         | map('split',';')
+         | flatten
+         | map('trim')
+         | select('truthy')
+         | unique
+         | list }}
+
+- name: Show groups to ensure (debug)
+  debug:
+    var: _all_groups
+
+- name: Ensure host groups exist
+  community.zabbix.zabbix_group:
+    state: present
+    host_groups: "{{ _all_groups }}"
+  when: _all_groups | length > 0
+
+# ВАЖНО: блока Ensure host groups exist нет — zabbix_host сам создаст группы
+
+- name: Ensure Zabbix hosts exist
+  community.zabbix.zabbix_host:
+    host_name: >-
+      {{ item.name | default(item.host_name) | default(item.hostname) }}
+    visible_name: >-
+      {{ item.visible_name
+         | default(item.name)
+         | default(item.host_name)
+         | default(item.hostname)
+         | default(omit, true) }}
+    status: enabled
+
+    interfaces:
+      - type: 2           # SNMP
+        main: 1
+        useip: 1
+        ip: >-
+          {{ item.ip | default(item.ip_address) | default(item.address) }}
+        dns: ""
+        port: "161"
+        details:
+          version: 2
+          bulk: 1
+          community: >-
+            {{ item.community | default(zbx_snmp_community) }}
+
+    host_groups: >-
+      {{ (item.groups | default(''))
+         | split(';')
+         | map('trim')
+         | select('truthy')
+         | list }}
+    link_templates: >-
+      {{ (item.templates | default(''))
+         | split(';')
+         | map('trim')
+         | select('truthy')
+         | list }}
+    proxy: "{{ item.proxy | default(omit, true) }}"
+    state: present
+  loop: "{{ devices }}"
+  loop_control:
+    label: >-
+      {{ (item.name | default(item.host_name) | default(item.hostname) | default('?')) }}
+      ({{ item.ip | default(item.ip_address) | default(item.address) | default('?') }})

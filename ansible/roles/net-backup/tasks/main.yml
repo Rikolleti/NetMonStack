@@ -1,0 +1,106 @@
+---
+# Создать каталог локально (первым таском роли)
+- name: Ensure backup_dir exists (local)
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    mode: "0750"
+
+# Cisco IOS
+- name: Backup Cisco IOS
+  when: ansible_network_os is defined and ansible_network_os == 'cisco.ios.ios'
+  block:
+    - name: Disable pager (ios)
+      cisco.ios.ios_command:
+        commands: ["{{ pager_disable_map.ios }}"]
+      changed_when: false
+      ignore_errors: true
+
+    - name: Collect running-config (ios)
+      cisco.ios.ios_command:
+        commands: ["{{ show_command_map.ios }}"]
+      register: ios_out
+
+    - name: Save config (ios)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.iso8601_basic }}.{{ file_ext_map.ios }}"
+        content: "{{ (ios_out.stdout | default(ios_out.stdout_lines)|join('\n')) }}"
+        mode: "0640"
+
+# Huawei (generic via cli_command)
+- name: Backup Huawei (generic)
+  when: "'huawei' in group_names"
+  block:
+    - name: Disable pager (huawei)
+      ansible.netcommon.cli_command:
+        command: "{{ pager_disable_map.huawei }}"
+      changed_when: false
+      ignore_errors: true
+
+    - name: Collect configuration (huawei)
+      ansible.netcommon.cli_command:
+        command: "{{ show_command_map.huawei }}"
+      register: huawei_out
+
+    - name: Save config (huawei)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.iso8601_basic }}.{{ file_ext_map.huawei }}"
+        content: "{{ (huawei_out.stdout | default(huawei_out.stdout_lines)|join('\n')) }}"
+        mode: "0640"
+
+# MikroTik
+- name: Backup MikroTik (RouterOS)
+  when: ansible_network_os is defined and ansible_network_os == 'community.routeros.routeros'
+  block:
+    - name: Collect export (mikrotik)
+      community.routeros.routeros_command:
+        commands: ["{{ show_command_map.mikrotik }}"]
+      register: mk_out
+
+    - name: Save export (mikrotik)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.iso8601_basic }}.{{ file_ext_map.mikrotik }}"
+        content: "{{ (mk_out.stdout | default(mk_out.stdout_lines)|join('\n')) }}"
+        mode: "0640"
+
+# Eltex (generic via cli_command)
+- name: Backup Eltex (generic)
+  when: "'eltex' in group_names"
+  block:
+    - name: Disable pager (eltex)
+      ansible.netcommon.cli_command:
+        command: "{{ pager_disable_map.eltex }}"
+      changed_when: false
+      ignore_errors: true
+
+    - name: Collect configuration (eltex)
+      ansible.netcommon.cli_command:
+        command: "{{ show_command_map.eltex }}"
+      register: eltex_out
+
+    - name: Save config (eltex)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.iso8601_basic }}.{{ file_ext_map.eltex }}"
+        content: "{{ (eltex_out.stdout | default(eltex_out.stdout_lines)|join('\n')) }}"
+        mode: "0640"
+
+# Fallback
+- name: Backup via generic cli_command (fallback)
+  when: ios_out is not defined and huawei_out is not defined and mk_out is not defined and eltex_out is not defined
+  block:
+    - name: Collect config (generic)
+      ansible.netcommon.cli_command:
+        command: "{{ backup_command | default(show_command_map.huawei) }}"
+      register: generic_out
+
+    - name: Save config (generic)
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.iso8601_basic }}.cfg"
+        content: "{{ (generic_out.stdout | default(generic_out.stdout_lines)|join('\n')) }}"
+        mode: "0640"

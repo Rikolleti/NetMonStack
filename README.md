@@ -86,11 +86,13 @@ netmonstack/
 │   └── docker-compose.yml
 │   └── .env
 ├── ansible/
-│   ├── add-host.yml
-│   ├── backup-playbook.yml
-│   ├── import-templates.yml
-│   ├── hosts.csv
-│   └── group\_vars/
+│   │   └── prod/
+│   │       ├── hosts.ini
+│   │       ├── hosts.yml
+│   │       ├── hosts.csv
+│   │       └── group_vars/
+│   │           ├── all.yml
+│   │           └── zabbix_api.yml
 ├── grafana/
 │   └── provisioning/
 |──zabbix/

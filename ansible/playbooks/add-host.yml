@@ -1,0 +1,7 @@
+---
+- name: Bulk add hosts from CSV into Zabbix
+  hosts: zabbix_api
+  gather_facts: false
+
+  roles:
+    - zabbix-hosts
