@@ -152,10 +152,11 @@ netmonstack/
 
 ### ⚙️ Ansible
 
-- [ ] `import-templates.yml` — импорт шаблонов
-- [ ] `add-host.yml` — массовое добавление устройств
-- [ ] `backup-playbook.yml` — бэкап конфигураций
-- [ ] `hosts.csv` — инвентарь устройств
+- [✅] Разделение group_vars (all.yml, zabbix_api.yml)
+- [✅] playbooks/prod/import-templates.yml
+- [✅] playbooks/prod/add-host.yml (CSV → Zabbix API)
+- [✅] playbooks/prod/backup-playbook.yml (role: net-backup)
+- [✅] ansible/inventory/prod/hosts.csv
 
 ### ⏱ Cron
 
@@ -203,8 +204,12 @@ ssh user@VM_IP
 cd docker && docker-compose up -d
 
 # 5. Настрой Zabbix: шаблоны и хосты
-ansible-playbook ansible/import-templates.yml
-ansible-playbook ansible/add-host.yml
+# импорт шаблонов
+ansible-playbook -i ansible/inventory/prod playbooks/prod/import-templates.yml
+# добавить хосты из CSV в Zabbix (группа zabbix_api)
+ansible-playbook -i ansible/inventory/prod playbooks/prod/add-host.yml
+# бэкап конфигов сетевых устройств
+ansible-playbook -i ansible/inventory/prod playbooks/prod/backup-playbook.yml
 ````
 
 ---
