@@ -12,7 +12,7 @@ To build a fully automated system for monitoring and managing network infrastruc
 
 ---
 
-## 🧱 Архитектура
+## 🧱 Architecture
 
 ```
 
@@ -143,7 +143,7 @@ netmonstack/
 - [✅] Write `main.tf` for VM deployment
 - [✅] Configure firewall ports and SSH access
 
-### 🐳 Мониторинг + Docker
+### 🐳 Monitoring + Docker
 
 - [✅] `docker-compose.yml` with Zabbix, Grafana, PostgreSQL
 - [✅] Create `.env.example` file
@@ -174,7 +174,7 @@ netmonstack/
 - [ ] Add steps: Packer → Terraform → Docker → Ansible
 - [ ] Add lint checks and notifications
 
-### 🧼 Финализация
+### 🧼 Finalization
 
 - [ ] Polish README.md, architecture docs, instructions
 - [ ] Add screenshots of Zabbix and Grafana
