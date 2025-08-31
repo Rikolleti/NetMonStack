@@ -1,72 +1,71 @@
 
 # 🚀 NetMonStack
 
-**NetMonStack** — это production-like система мониторинга сетевых устройств с автоматическим сбором метрик, визуализацией, алертами, резервным копированием конфигураций, деплоем через CI/CD и созданием образов через Packer.  
-Проект построен на стеке **Zabbix + Grafana + Ansible + Terraform + Packer + Docker Compose** и демонстрирует полный DevOps-цикл.
+NetMonStack is a production-like monitoring system for network devices with automated metric collection, visualization, alerts, configuration backups, CI/CD deployment, and Packer-based image creation.
+The project is built on the Zabbix + Grafana + Ansible + Terraform + Packer + Docker Compose stack and demonstrates the full DevOps lifecycle.
 
 ---
 
-## 📌 Цель проекта
+## 📌 Project Goal
 
-Создать полностью автоматизированную систему мониторинга и управления сетевой инфраструктурой, демонстрирующую навыки DevOps, сетевого инжиниринга и SRE-подхода: от создания образа до алертов и бэкапов.
+To build a fully automated system for monitoring and managing network infrastructure that showcases DevOps, network engineering, and SRE practices — from image creation to alerts and backups.
 
 ---
 
 ## 🧱 Архитектура
 
 ```
+
         GitHub (CI/CD)
             │
             ▼
     ┌────────────────────┐
-    │   Packer (Ubuntu)  │ ──► кастомный образ с Docker, Ansible, cron
+    │   Packer (Ubuntu)  │ ──► custom image with Docker, Ansible, cron
     └────────────────────┘
             │
             ▼
     ┌────────────────────┐
-    │ Terraform          │ ──► Создаёт ВМ из образа
+    │ Terraform          │ ──► Creates VM from the image
     └────────────────────┘
             │
             ▼
     ┌────────────────────┐
-    │ Docker Compose     │ ──► Запускает контейнеры:
+    │ Docker Compose     │ ──► Runs containers:
     │                    │      Zabbix, Grafana, Alertmanager
     └────────────────────┘
             │
             ▼
     ┌────────────────────┐
-    │                    |
-    | Ansible (по ssh)   │ ──► Загружает шаблоны
-    │                    | ──► Добавляет хосты
-    │                    | ──► Делает бэкапы
+    │ Ansible (via SSH)  │ ──► Imports templates
+    │                    │ ──► Adds hosts
+    │                    │ ──► Performs backups
     └────────────────────┘
             │
             ▼
     ┌────────────────────┐
-    │ Grafana + Zabbix │ | <── Визуализация и алерты
+    │ Grafana + Zabbix   │ <── Visualization and alerts
     └────────────────────┘
-
 
 ```
 
 ---
 
-## 📦 Компоненты проекта
+## 📦 Project Components
 
-| Компонент         | Назначение                                        |
-|-------------------|---------------------------------------------------|
-| **Packer**         | Создание образа Ubuntu с Docker, Ansible, cron   |
-| **Terraform**      | Развёртывание облачной ВМ на основе образа       |
-| **Docker Compose** | Запуск мониторингового стека внутри ВМ           |
-| **Zabbix**         | Сбор метрик, шаблоны, триггеры, алерты           |
-| **Grafana**        | Визуализация (через Zabbix Data Source)          |
-| **Ansible**        | Импорт шаблонов, добавление хостов, бэкапы       |
-| **GitHub Actions** | CI/CD: автоматическая сборка и деплой            |
-| **cron**           | Ежедневный запуск бэкапов конфигураций           |
+| Component          | Purpose                                        |
+| ------------------ | ---------------------------------------------- |
+| **Packer**         | Build Ubuntu image with Docker, Ansible, cron  |
+| **Terraform**      | Deploy VM in the cloud using the image         |
+| **Docker Compose** | Run monitoring stack inside the VM             |
+| **Zabbix**         | Metric collection, templates, triggers, alerts |
+| **Grafana**        | Visualization (via Zabbix Data Source)         |
+| **Ansible**        | Import templates, add hosts, backups           |
+| **GitHub Actions** | CI/CD: automated build and deployment          |
+| **cron**           | Daily configuration backup tasks               |
 
 ---
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```
 
@@ -97,11 +96,11 @@ netmonstack/
 │   └── provisioning/
 |──zabbix/
 |   ── server/
-│   ├── alertscripts/         # Скрипты для уведомлений (Telegram и пр.)
-│   ├── export/               # Экспорт шаблонов
-│   ├── externalscripts/      # Скрипты внешнего мониторинга
-│   └── snmptraps/            # Файлы с SNMP ловушками
-|   ── snmp_templates/           # Шаблоны мониторинга по SNMP
+│   ├── alertscripts/         # Notification scripts (Telegram, etc.)
+│   ├── export/               # Template exports
+│   ├── externalscripts/      # External monitoring scripts
+│   └── snmptraps/            # SNMP trap files
+|   ── snmp_templates/        # SNMP monitoring templates
 ├── backups/
 ├── .github/
 │   └── workflows/deploy.yml
@@ -112,47 +111,47 @@ netmonstack/
 
 ---
 
-## 📈 Возможности
+## 📈 Features
 
-- 🔍 Мониторинг устройств (SNMP, Zabbix Agent, ICMP)
-- 📊 Визуализация в Grafana (дэшборды, алерты через триггеры Zabbix)
-- 📩 Уведомления при сбоях (Telegram, Email через Zabbix Media Types)
-- ⚙️ Автоматическая загрузка шаблонов Zabbix
-- 🧩 Массовое добавление устройств через Ansible
-- 🗄 Резервное копирование конфигов по cron
-- 🚀 CI/CD-деплой через GitHub Actions
-- 🏗 Быстрое развёртывание инфраструктуры через Terraform
-- 🧱 Сборка кастомного образа с Packer
+- 🔍 Device monitoring (SNMP, Zabbix Agent, ICMP)
+- 📊 Grafana visualization (dashboards, alerts via Zabbix triggers)
+- 📩 Failure notifications (Telegram, Email via Zabbix Media Types)
+- ⚙️ Automated Zabbix template import
+- 🧩 Bulk device import via Ansible
+- 🗄 Configuration backups via cron
+- 🚀 CI/CD deployment with GitHub Actions
+- 🏗 Fast infrastructure provisioning with Terraform
+- 🧱 Custom image building with Packer
 
 ---
 
-## ✅ To-Do (чек-лист реализации)
+## ✅ To-Do (Implementation Checklist)
 
-### 📦 Подготовка окружения
+### 📦 Environment Setup
 
-- [✅] Инициализировать репозиторий, структуру проекта
-- [✅] Настроить базовые зависимости (Docker, Ansible и т.п.)
+- [✅] Initialize repository and project structure
+- [✅] Set up base dependencies (Docker, Ansible, etc.)
 
 ### 🔧 Packer
 
-- [✅] Создать `ubuntu-zabbix.pkr.hcl`
-- [✅] Написать `install.sh` (Docker, Ansible, cron)
-- [✅] Собрать образ и протестировать
+- [✅] Create `ubuntu-zabbix.pkr.hcl`
+- [✅] Write `install.sh` (Docker, Ansible, cron)
+- [✅] Build and test the image
 
 ### ☁️ Terraform
 
-- [✅] Написать `main.tf` с развёртыванием на основе образа
-- [✅] Открыть порты, настроить SSH-доступ
+- [✅] Write `main.tf` for VM deployment
+- [✅] Configure firewall ports and SSH access
 
 ### 🐳 Мониторинг + Docker
 
-- [✅] `docker-compose.yml` с Zabbix, Grafana, PostgreSQL
-- [✅] Создать `.env.example` файл
-- [✅] Протестировать stack, настроить volume'ы
+- [✅] `docker-compose.yml` with Zabbix, Grafana, PostgreSQL
+- [✅] Create `.env.example` file
+- [✅] Test stack and configure volumes
 
 ### ⚙️ Ansible
 
-- [✅] Разделение group_vars (all.yml, zabbix_api.yml)
+- [✅] Separate group_vars (all.yml, zabbix_api.yml)
 - [✅] playbooks/prod/import-templates.yml
 - [✅] playbooks/prod/add-host.yml (CSV → Zabbix API)
 - [✅] playbooks/prod/backup-playbook.yml (role: net-backup)
@@ -160,69 +159,69 @@ netmonstack/
 
 ### ⏱ Cron
 
-- [ ] Настроить `cron` для ежедневных бэкапов
-- [ ] Проверить, что файлы появляются в `backups/`
+- [ ] Configure `cron` for daily backups
+- [ ] Verify files appear in `backups/`
 
 ### 📊 Grafana + Zabbix
 
 - [ ] Provisioning dashboards
-- [ ] Настроить Zabbix Data Source
-- [ ] Настроить уведомления из Zabbix (Telegram, Email)
+- [ ] Configure Zabbix Data Source
+- [ ] Set up notifications (Telegram, Email)
 
 ### 🚀 CI/CD (GitHub Actions)
 
-- [ ] Написать `.github/workflows/deploy.yml`
-- [ ] Добавить шаги: Packer → Terraform → Docker → Ansible
-- [ ] Добавить lint-проверки и уведомления
+- [ ] Write `.github/workflows/deploy.yml`
+- [ ] Add steps: Packer → Terraform → Docker → Ansible
+- [ ] Add lint checks and notifications
 
 ### 🧼 Финализация
 
-- [ ] Оформить README.md, архитектуру, инструкции
-- [ ] Добавить скриншоты Zabbix и Grafana
-- [ ] Выложить на GitHub, добавить в резюме
+- [ ] Polish README.md, architecture docs, instructions
+- [ ] Add screenshots of Zabbix and Grafana
+- [ ] Publish on GitHub and include in resume
 
 ---
 
-## 🔧 Как запустить (в разработке)
+## 🔧 How to Run (WIP)
 
 ```bash
-# 1. Клонируй репозиторий
+# 1. Clone the repo
 git clone https://github.com/yourname/netmonstack.git
 cd netmonstack
 
-# 2. Собери образ
+# 2. Build the image
 cp docker/.env.example docker/.env
 cd packer && packer build -var-file=variables.pkrvars.hcl ubuntu-zabbix.pkr.hcl
 
-# 3. Разверни инфраструктуру
+# 3. Deploy infrastructure
 cd ../terraform
 terraform init
 terraform apply
 
-# 4. Подключись к ВМ и запусти стек мониторинга
+# 4. Connect to VM and start monitoring stack
 ssh user@VM_IP
 cd docker && docker-compose up -d
 
-# 5. Настрой Zabbix: шаблоны и хосты
-# импорт шаблонов
+# 5. Configure Zabbix: templates and hosts
+# import templates
 ansible-playbook -i ansible/inventory/prod playbooks/prod/import-templates.yml
-# добавить хосты из CSV в Zabbix (группа zabbix_api)
+# add hosts from CSV (zabbix_api group)
 ansible-playbook -i ansible/inventory/prod playbooks/prod/add-host.yml
-# бэкап конфигов сетевых устройств
+# backup device configs
 ansible-playbook -i ansible/inventory/prod playbooks/prod/backup-playbook.yml
 ````
 
 ---
 
-## 🧠 Автор проекта
+## 🧠 Author
 
-**Аждар Мамедов**, Network Engineer
+**Azhdar Mamedov**, Network Engineer
 📍 GitHub: [@rikolleti](https://github.com/rikolleti)
 🔗 Telegram: [@mamedov\_ak](https://t.me/mamedov_ak)
-🎯 Проект реализуется в рамках подготовки к роли DevOps/SRE
+🎯 Project developed as part of preparation for a DevOps/SRE role
 
 ---
 
-## 📄 Лицензия
+## 📄 License
 
-MIT — свободно использовать, дорабатывать и распространять.
+MIT — free to use, modify, and distribute.
